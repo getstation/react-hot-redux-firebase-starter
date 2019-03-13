@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import {Router} from 'react-router';
+import PropTypes from 'prop-types';
+import { Router } from 'react-router';
 import routes from '../routes';
 
 // If you use React Router, make this component
@@ -12,15 +13,13 @@ import routes from '../routes';
 class App extends Component {
   render() {
     const { history, store } = this.props;
-    return (
-      <Router routes={routes(store)} history={history} />
-    );
+    return <Router routes={routes(store)} history={history} />;
   }
 }
 
 App.propTypes = {
-  history: React.PropTypes.object.isRequired,
-  store: React.PropTypes.object.isRequired
+  history: PropTypes.object.isRequired,
+  store: PropTypes.object.isRequired
 };
 
 export default App;

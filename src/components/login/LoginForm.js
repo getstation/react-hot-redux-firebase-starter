@@ -1,7 +1,8 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import TextInput from '../common/TextInput';
 
-const LoginForm = ({user, onSave, onChange, saving}) => {
+const LoginForm = ({ user, onSave, onChange, saving }) => {
   return (
     <form>
       <h1>Login</h1>
@@ -10,30 +11,31 @@ const LoginForm = ({user, onSave, onChange, saving}) => {
         label="Email"
         onChange={onChange}
         value={user.email}
-        />
+      />
 
       <TextInput
         name="password"
         label="Password"
         onChange={onChange}
         value={user.password}
-        />
+      />
 
       <input
         type="submit"
         disabled={saving}
         value={saving ? 'Logining in...' : 'Login'}
         className="btn btn-primary"
-        onClick={onSave}/>
+        onClick={onSave}
+      />
     </form>
   );
 };
 
 LoginForm.propTypes = {
-  onSave: React.PropTypes.func.isRequired,
-  saving: React.PropTypes.bool,
-  user: React.PropTypes.object.isRequired,
-  onChange: React.PropTypes.func.isRequired
+  onSave: PropTypes.func.isRequired,
+  saving: PropTypes.bool,
+  user: PropTypes.object.isRequired,
+  onChange: PropTypes.func.isRequired
 };
 
 export default LoginForm;

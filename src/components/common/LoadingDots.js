@@ -1,15 +1,17 @@
-import React, {PropTypes} from 'react';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
-class LoadingDots extends React.Component {
+class LoadingDots extends Component {
   constructor(props, context) {
     super(props, context);
 
-    this.state = {frame: 1};
+    this.state = { frame: 1 };
   }
 
   componentDidMount() {
     this.interval = setInterval(() => {
-      this.setState({  // eslint-disable-line react/no-did-mount-set-state
+      this.setState({
+        // eslint-disable-line react/no-did-mount-set-state
         frame: this.state.frame + 1
       });
     }, this.props.interval);
@@ -31,7 +33,8 @@ class LoadingDots extends React.Component {
 }
 
 LoadingDots.defaultProps = {
-  interval: 300, dots: 3
+  interval: 300,
+  dots: 3
 };
 
 LoadingDots.propTypes = {

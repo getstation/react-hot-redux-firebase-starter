@@ -1,17 +1,17 @@
 // modules
-import {AppContainer} from 'react-hot-loader';
+import { AppContainer } from 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Provider} from 'react-redux';
-import {syncHistoryWithStore} from 'react-router-redux';
-import {browserHistory} from 'react-router';
+import { Provider } from 'react-redux';
+import { syncHistoryWithStore } from 'react-router-redux';
+import { browserHistory } from 'react-router';
 
 // api
 import FirebaseApi from './api/firebase';
 
 // actions
-import {authInitialized} from './actions/authActions';
-import {ajaxCallError, beginAjaxCall} from './actions/ajaxStatusActions';
+import { authInitialized } from './actions/authActions';
+import { ajaxCallError, beginAjaxCall } from './actions/ajaxStatusActions';
 
 // components
 import App from './components/App';
@@ -35,38 +35,36 @@ const rootEl = document.getElementById('root');
 // Initialize Firebase Auth and then start the app
 store.dispatch(beginAjaxCall());
 FirebaseApi.initAuth()
-  .then(
-    user => {
-      store.dispatch(authInitialized(user));
+  .then(user => {
+    store.dispatch(authInitialized(user));
 
-      ReactDOM.render(
-        <AppContainer>
-          <Provider store={store}>
-            <App history={history} store={store}/>
-          </Provider>
-        </AppContainer>,
-        rootEl
-      );
+    ReactDOM.render(
+      <AppContainer>
+        <Provider store={store}>
+          <App history={history} store={store} />
+        </Provider>
+      </AppContainer>,
+      rootEl
+    );
 
-      if (module.hot) {
-        module.hot.accept('./components/App', () => {
-          // If you use Webpack 2 in ES modules mode, you can
-          // use <App /> here rather than require() a <NextApp />.
-          const NextApp = require('./components/App').default;
-          ReactDOM.render(
-            <AppContainer>
-              <Provider store={store}>
-                <NextApp history={history} store={store}/>
-              </Provider>
-            </AppContainer>,
-            rootEl
-          );
-        });
-      }
-    })
-  .catch(
-    error => {
-      store.dispatch(ajaxCallError());
-      console.error('error while initializing Firebase Auth'); // eslint-disable-line no-console
-      console.error(error); // eslint-disable-line no-console
-    });
+    if (module.hot) {
+      module.hot.accept('./components/App', () => {
+        // If you use Webpack 2 in ES modules mode, you can
+        // use <App /> here rather than require() a <NextApp />.
+        const NextApp = require('./components/App').default;
+        ReactDOM.render(
+          <AppContainer>
+            <Provider store={store}>
+              <NextApp history={history} store={store} />
+            </Provider>
+          </AppContainer>,
+          rootEl
+        );
+      });
+    }
+  })
+  .catch(error => {
+    store.dispatch(ajaxCallError());
+    console.error('error while initializing Firebase Auth'); // eslint-disable-line no-console
+    console.error(error); // eslint-disable-line no-console
+  });

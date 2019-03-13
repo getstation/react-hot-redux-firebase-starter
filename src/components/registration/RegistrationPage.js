@@ -1,18 +1,19 @@
-import React, {PropTypes} from 'react';
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-import {createUserWithEmailAndPassword} from '../../actions/authActions';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import { createUserWithEmailAndPassword } from '../../actions/authActions';
 import RegistrationForm from './RegistrationForm';
 import toastr from 'toastr';
 
-export class RegistrationPage extends React.Component {
+class RegistrationPage extends Component {
   constructor(props, context) {
     super(props, context);
 
     this.state = {
       user: {
-        email: "",
-        password: ""
+        email: '',
+        password: ''
       },
       saving: false
     };
@@ -25,19 +26,20 @@ export class RegistrationPage extends React.Component {
     const field = event.target.name;
     let user = this.state.user;
     user[field] = event.target.value;
-    return this.setState({user: user});
+    return this.setState({ user: user });
   }
 
   createUser(event) {
     event.preventDefault();
 
-    this.setState({saving: true});
+    this.setState({ saving: true });
 
-    this.props.actions.createUserWithEmailAndPassword(this.state.user)
-      .then((user) => toastr.success('User Created'))
+    this.props.actions
+      .createUserWithEmailAndPassword(this.state.user)
+      .then(user => toastr.success('User Created'))
       .catch(error => {
         toastr.error(error.message);
-        this.setState({saving: false});
+        this.setState({ saving: false });
       });
   }
 
@@ -67,8 +69,11 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    actions: bindActionCreators({createUserWithEmailAndPassword}, dispatch)
+    actions: bindActionCreators({ createUserWithEmailAndPassword }, dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(RegistrationPage);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(RegistrationPage);
