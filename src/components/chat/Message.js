@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
 
 const Message = props => {
-  if (props.message.userId === 1) {
+  if (props.message.userId === props.user.uid) {
     return (
       <div className="media m-2 justify-content-end">
         <div className="card text-white bg-primary ml-5">
@@ -27,7 +28,12 @@ const Message = props => {
 };
 
 Message.propTypes = {
-  message: PropTypes.object.isRequired
+  message: PropTypes.object.isRequired,
+  user: PropTypes.object.isRequired
 };
 
-export default Message;
+const mapStateToProps = state => ({
+  user: state.user
+});
+
+export default connect(mapStateToProps)(Message);
