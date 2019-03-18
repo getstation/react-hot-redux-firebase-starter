@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
 import Message from './Message';
-import guid from '../../utilities/guid';
 import isEmpty from '../../utilities/is-empty';
 import { createMessage, loadMessages } from '../../actions/messageActions';
 
@@ -20,12 +19,11 @@ class MessageList extends Component {
   }
 
   componentDidMount() {
-    this.props.loadMessages();
     this.scrollToLatestMessage();
   }
 
   componentDidUpdate() {
-    this.scrollToLatestMessage();
+    // this.scrollToLatestMessage();
   }
 
   scrollToLatestMessage() {
@@ -41,10 +39,13 @@ class MessageList extends Component {
   handleSubmit(event) {
     event.preventDefault();
     if (isEmpty(this.state.currentMessage)) return;
-    this.props.createMessage({
-      content: this.state.currentMessage,
-      userId: this.props.user.uid
-    });
+    this.props.createMessage(
+      {
+        content: this.state.currentMessage,
+        userId: this.props.user.uid
+      },
+      this.props.chatroom.activeChatroom.uid
+    );
     this.setState({ currentMessage: '' });
   }
 
@@ -55,7 +56,7 @@ class MessageList extends Component {
   }
 
   render() {
-    const { messages, message, loading } = this.props.message;
+    const { messages, loading } = this.props.message;
     let messageList;
     if (loading) {
       messageList = <div>Loading</div>;
@@ -67,7 +68,9 @@ class MessageList extends Component {
     return (
       <div>
         <div className="card">
-          <div className="card-header text-center">Chat room name</div>
+          <div className="card-header text-center">
+            {this.props.chatroom.activeChatroom.name}
+          </div>
           <div className="card-body chat-list">
             <div>{messageList}</div>
             {/* Fake element used for scrolling */}
@@ -114,7 +117,8 @@ MessageList.propTypes = {
 
 const mapStateToProps = state => ({
   message: state.message,
-  user: state.user
+  user: state.user,
+  chatroom: state.chatroom
 });
 
 export default connect(

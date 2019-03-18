@@ -12,16 +12,14 @@ export default function messageReducer(state = initialState, action) {
     case types.MESSAGES_LOADED_SUCCESS:
       return Object.assign({}, state, action.messages);
     case types.LOAD_MESSAGES:
-      return {
-        ...state,
+      return Object.assign({}, state, {
         messages: action.payload,
         loading: false
-      };
+      });
     case types.LOADING_MESSAGES:
-      return {
-        ...state,
+      return Object.assign({}, state, {
         loading: false
-      };
+      });
     default:
       return state;
   }

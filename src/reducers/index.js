@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 
 import user from './userReducer';
 import message from './messageReducer';
+import chatroom from './chatroomReducer';
 import routesPermissions from './routesPermissionsReducer';
 import auth from './authReducer';
 
@@ -13,6 +14,7 @@ const rootReducer = combineReducers({
   routesPermissions,
   user,
   message,
+  chatroom,
   auth,
   ajaxCallsInProgress
 });

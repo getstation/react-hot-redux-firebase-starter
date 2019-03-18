@@ -1,9 +1,7 @@
 import * as firebase from 'firebase/firebase-browser';
-import {firebaseConfig} from '../config';
-
+import { firebaseConfig } from '../config';
 
 class FirebaseApi {
-
   static initAuth() {
     firebase.initializeApp(firebaseConfig);
     return new Promise((resolve, reject) => {
@@ -17,15 +15,19 @@ class FirebaseApi {
     });
   }
 
-  static createUserWithEmailAndPassword(user){
-    return firebase.auth().createUserWithEmailAndPassword(user.email, user.password);
+  static createUserWithEmailAndPassword(user) {
+    return firebase
+      .auth()
+      .createUserWithEmailAndPassword(user.email, user.password);
   }
 
   static signInWithEmailAndPassword(user) {
-    return firebase.auth().signInWithEmailAndPassword(user.email, user.password);
+    return firebase
+      .auth()
+      .signInWithEmailAndPassword(user.email, user.password);
   }
 
-  static authSignOut(){
+  static authSignOut() {
     return firebase.auth().signOut();
   }
 
@@ -34,7 +36,7 @@ class FirebaseApi {
       firebase
         .database()
         .ref(path)
-        .push(value, (error) => {
+        .push(value, error => {
           if (error) {
             reject(error);
           } else {
@@ -63,12 +65,10 @@ class FirebaseApi {
   }
 
   static databaseSet(path, value) {
-
     return firebase
       .database()
       .ref(path)
       .set(value);
-
   }
 }
 
