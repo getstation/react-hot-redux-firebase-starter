@@ -32,7 +32,7 @@ class ChatRooms extends Component {
       isEmpty(this.props.chatroom.activeChatroom) &&
       !isEmpty(this.props.chatroom.rooms)
     ) {
-      this.setActiveRoom(this.props.chatroom.rooms[0]);
+      this.setActiveRoom(Object.values(this.props.chatroom.rooms)[0]);
     }
   }
 
@@ -62,7 +62,8 @@ class ChatRooms extends Component {
 
   setActiveRoom(room) {
     this.props.setActiveChatRoom(room);
-    this.props.loadMessages(room.uid);
+    // this.props.loadMessages(room.uid);
+    console.log(Object.values(room));
   }
 
   render() {
@@ -113,20 +114,20 @@ class ChatRooms extends Component {
     if (chatroom.loading || isEmpty(chatroom.rooms)) {
       roomList = <div />;
     } else {
-      roomList = chatroom.rooms.map(room => (
+      roomList = Object.keys(chatroom.rooms).map(key => (
         <a
-          key={room.uid}
+          key={key}
           href="#"
           className={classnames(
             'list-group-item list-group-item-action d-flex justify-content-between align-items-center',
             {
               'active text-white':
-                room.uid === this.props.chatroom.activeChatroom.uid
+                chatroom.rooms[key] === this.props.chatroom.activeChatroom
             }
           )}
-          onClick={() => this.setActiveRoom(room)}
+          onClick={() => this.setActiveRoom(chatroom.rooms[key])}
         >
-          {room.name}
+          {chatroom.rooms[key].name}
           <span className="badge badge-primary badge-pill">0</span>
         </a>
       ));

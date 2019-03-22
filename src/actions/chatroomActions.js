@@ -15,18 +15,10 @@ export const loadChatRooms = () => dispatch => {
   const ref = firebase.database().ref('/chatrooms');
   ref
     .once('value')
-    .then(snapshot => {
-      let rooms = [];
-      Object.keys(snapshot.val()).forEach(key => {
-        rooms.push({
-          name: snapshot.val()[key].name,
-          uid: key,
-          participants: snapshot.val()[key].participants
-        });
-      });
+    .then(rooms => {
       dispatch({
         type: types.LOAD_CHATROOMS,
-        payload: rooms
+        payload: rooms.val()
       });
     })
     .catch(err => console.log(err));
