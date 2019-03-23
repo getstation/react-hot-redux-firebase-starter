@@ -36,13 +36,13 @@ class ChatRooms extends Component {
       isEmpty(this.props.chatroom.activeChatroom) &&
       !isEmpty(this.props.chatroom.rooms)
     ) {
-      Object.keys(this.props.chatroom.rooms).map(key =>
-        this.props.loadLastTenMessages(key)
-      );
       this.setActiveRoom(
         Object.keys(this.props.chatroom.rooms)[0],
         Object.values(this.props.chatroom.rooms)[0]
       );
+      Object.keys(this.props.chatroom.rooms).map(key => {
+        return this.props.loadLastTenMessages(key);
+      });
     }
   }
 

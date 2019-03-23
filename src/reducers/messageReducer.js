@@ -1,4 +1,5 @@
 import * as types from '../actions/actionTypes';
+import isEmpty from '../utilities/is-empty';
 
 const initialState = {
   messages: {},
@@ -15,19 +16,21 @@ export default function messageReducer(state = initialState, action) {
         loading: false
       });
     case types.ADD_NEW_MESSAGE:
-      return Object.assign({}, state, {
-        messages: Object.assign({}, state.messages, {
-          [action.activeRoomUID]: Object.assign(
-            {},
-            state.messages[action.activeRoomUID],
-            {
-              [action.payload.key]: action.payload.val(),
-              unread: state.messages[action.activeRoomUID].unread + 1
-            }
-          )
-        }),
-        loading: false
-      });
+      if (!isEmpty(state.messages[action.activeRoomUID])) {
+        return Object.assign({}, state, {
+          messages: Object.assign({}, state.messages, {
+            [action.activeRoomUID]: Object.assign(
+              {},
+              state.messages[action.activeRoomUID],
+              {
+                [action.payload.key]: action.payload.val(),
+                unread: state.messages[action.activeRoomUID].unread + 1
+              }
+            )
+          }),
+          loading: false
+        });
+      }
     case types.CLEAR_UNREAD:
       return Object.assign({}, state, {
         messages: Object.assign({}, state.messages, {

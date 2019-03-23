@@ -31,7 +31,7 @@ export const loadLastTenMessages = key => dispatch => {
     .then(messages => {
       let payload = { [key]: Object.assign({}, messages.val(), { unread: 0 }) };
       if (isEmpty(messages.val())) {
-        payload = { [key]: {}, unread: 0 };
+        payload = {};
       }
       dispatch({
         type: types.LOAD_MESSAGES,
