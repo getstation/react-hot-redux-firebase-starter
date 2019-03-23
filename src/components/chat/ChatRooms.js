@@ -213,7 +213,6 @@ ChatRooms.propTypes = {
   loadLastTenMessages: PropTypes.func.isRequired,
   clearUnread: PropTypes.func.isRequired,
   chatroom: PropTypes.object.isRequired,
-  chatroom: PropTypes.object.isRequired,
   messages: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired
 };
