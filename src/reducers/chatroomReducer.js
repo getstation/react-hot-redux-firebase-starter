@@ -2,8 +2,6 @@ import * as types from '../actions/actionTypes';
 
 const initialState = {
   activeChatroom: {},
-  // joinedChatrooms: [],
-  // availableChatrooms: [],
   rooms: {},
   loading: false
 };
