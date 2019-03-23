@@ -1,5 +1,6 @@
 import * as firebase from 'firebase/firebase-browser';
 import * as types from './actionTypes';
+import isEmpty from '../utilities/is-empty';
 
 // Create a new message
 export const createMessage = (message, key) => dispatch => {
@@ -8,25 +9,45 @@ export const createMessage = (message, key) => dispatch => {
   newMessage.set({ content: message.content, userId: message.userId });
 };
 
-// Reload previous messages
-export const loadMessages = key => dispatch => {
-  dispatch(loadingMessages());
+// Track new message added
+export const addNewMessage = key => dispatch => {
   const ref = firebase.database().ref(`/chatrooms/${key}/messages`);
-  let messages = [];
-  ref.on('child_added', message => {
-    messages = [
-      ...messages,
-      {
-        content: message.val().content,
-        uid: message.key,
-        userId: message.val().userId
-      }
-    ];
+  ref.limitToLast(1).on('child_added', message => {
     dispatch({
-      type: types.LOAD_MESSAGES,
-      payload: messages
+      type: types.ADD_NEW_MESSAGE,
+      payload: message,
+      activeRoomUID: key
     });
   });
+};
+
+// Reload previous messages
+export const loadLastTenMessages = key => dispatch => {
+  dispatch(loadingMessages());
+  const ref = firebase.database().ref(`/chatrooms/${key}/messages`);
+  ref
+    .limitToLast(10)
+    .once('value')
+    .then(messages => {
+      let payload = { [key]: Object.assign({}, messages.val(), { unread: 0 }) };
+      if (isEmpty(messages.val())) {
+        payload = { [key]: {}, unread: 0 };
+      }
+      dispatch({
+        type: types.LOAD_MESSAGES,
+        payload: payload,
+        activeRoomUID: key
+      });
+    });
+  dispatch(addNewMessage(key));
+};
+
+// Clear unread messages
+export const clearUnread = key => {
+  return {
+    type: types.CLEAR_UNREAD,
+    activeRoomUID: key
+  };
 };
 
 // Loading messages

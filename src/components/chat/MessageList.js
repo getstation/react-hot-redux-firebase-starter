@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 
 import Message from './Message';
 import isEmpty from '../../utilities/is-empty';
-import { createMessage, loadMessages } from '../../actions/messageActions';
+import { createMessage, clearUnread } from '../../actions/messageActions';
+import { joinRoom } from '../../actions/chatroomActions';
 
 class MessageList extends Component {
   constructor(props) {
@@ -16,14 +17,18 @@ class MessageList extends Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleKeyPress = this.handleKeyPress.bind(this);
+    this.joinRoom = this.joinRoom.bind(this);
   }
 
   componentDidMount() {
     this.scrollToLatestMessage();
+    if (!isEmpty(this.props.chatroom.activeChatroom.uid)) {
+      this.props.clearUnread(this.props.chatroom.activeChatroom.uid);
+    }
   }
 
   componentDidUpdate() {
-    // this.scrollToLatestMessage();
+    this.scrollToLatestMessage();
   }
 
   scrollToLatestMessage() {
@@ -47,6 +52,7 @@ class MessageList extends Component {
       this.props.chatroom.activeChatroom.uid
     );
     this.setState({ currentMessage: '' });
+    this.props.clearUnread(this.props.chatroom.activeChatroom.uid);
   }
 
   handleKeyPress(event) {
@@ -55,15 +61,79 @@ class MessageList extends Component {
     }
   }
 
+  joinRoom() {
+    const participants = isEmpty(
+      this.props.chatroom.activeChatroom.participants
+    )
+      ? []
+      : this.props.chatroom.activeChatroom.participants;
+    this.props.joinRoom(
+      this.props.chatroom.activeChatroom.uid,
+      this.props.user.uid,
+      participants
+    );
+  }
+
   render() {
     const { messages, loading } = this.props.message;
+    const uid = this.props.chatroom.activeChatroom.uid;
     let messageList;
     if (loading) {
-      messageList = <div>Loading</div>;
+      messageList = <div className="text-center text-mute">Loading...</div>;
+    } else if (isEmpty(messages[uid])) {
+      messageList = <div className="text-center text-mute">No message</div>;
     } else {
-      messageList = messages.map(message => (
-        <Message message={message} key={message.uid} />
-      ));
+      let list = messages[this.props.chatroom.activeChatroom.uid];
+      messageList = Object.keys(list).map(key => {
+        if (key !== 'unread') {
+          return (
+            <Message
+              message={list[key]}
+              chatroom_uid={this.props.chatroom.activeChatroom.uid}
+              key={key}
+            />
+          );
+        }
+      });
+    }
+    let inputElement;
+    if (
+      !isEmpty(this.props.chatroom.activeChatroom.participants) &&
+      this.props.chatroom.activeChatroom.participants.includes(
+        this.props.user.uid
+      )
+    ) {
+      inputElement = (
+        <form onSubmit={this.handleSubmit}>
+          <div className="row">
+            <div className="form-group col-10">
+              <textarea
+                className="form-control"
+                id="chat-input"
+                rows="2"
+                placeholder="Your message here..."
+                name="currentMessage"
+                value={this.state.currentMessage}
+                onChange={this.handleChange}
+                onKeyPress={this.handleKeyPress}
+              />
+            </div>
+            <div className="col-2">
+              <button type="submit" className="btn btn-primary btn-block">
+                Send
+              </button>
+            </div>
+          </div>
+        </form>
+      );
+    } else {
+      inputElement = (
+        <div className="text-center">
+          <button className="btn btn-primary col-6" onClick={this.joinRoom}>
+            Join room
+          </button>
+        </div>
+      );
     }
     return (
       <div>
@@ -80,29 +150,7 @@ class MessageList extends Component {
               }}
             />
           </div>
-          <div className="card-footer">
-            <form onSubmit={this.handleSubmit}>
-              <div className="row">
-                <div className="form-group col-10">
-                  <textarea
-                    className="form-control"
-                    id="chat-input"
-                    rows="2"
-                    placeholder="Your message here..."
-                    name="currentMessage"
-                    value={this.state.currentMessage}
-                    onChange={this.handleChange}
-                    onKeyPress={this.handleKeyPress}
-                  />
-                </div>
-                <div className="col-2">
-                  <button type="submit" className="btn btn-primary btn-block">
-                    Send
-                  </button>
-                </div>
-              </div>
-            </form>
-          </div>
+          <div className="card-footer">{inputElement}</div>
         </div>
       </div>
     );
@@ -111,7 +159,9 @@ class MessageList extends Component {
 
 MessageList.propTypes = {
   createMessage: PropTypes.func.isRequired,
-  loadMessages: PropTypes.func.isRequired,
+  clearUnread: PropTypes.func.isRequired,
+  joinRoom: PropTypes.func.isRequired,
+  chatroom: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired
 };
 
@@ -123,5 +173,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { createMessage, loadMessages }
+  { createMessage, clearUnread, joinRoom }
 )(MessageList);

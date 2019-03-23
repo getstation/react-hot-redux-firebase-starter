@@ -4,7 +4,7 @@ const initialState = {
   activeChatroom: {},
   // joinedChatrooms: [],
   // availableChatrooms: [],
-  rooms: [],
+  rooms: {},
   loading: false
 };
 
@@ -22,6 +22,12 @@ export default function chatroomReducer(state = initialState, action) {
     case types.SET_ACTIVE_ROOM:
       return Object.assign({}, state, {
         activeChatroom: action.payload
+      });
+    case types.JOIN_ROOM:
+      return Object.assign({}, state, {
+        activeChatroom: Object.assign({}, state.activeChatroom, {
+          participants: [...state.activeChatroom.participants, action.userUID]
+        })
       });
     default:
       return state;

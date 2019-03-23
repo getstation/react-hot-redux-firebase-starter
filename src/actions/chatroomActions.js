@@ -31,10 +31,30 @@ export const loadingChatRooms = () => {
   };
 };
 
+// Join room
+export const joinRoom = (roomUID, userUID, participants) => dispatch => {
+  firebase
+    .database()
+    .ref(`/chatrooms/${roomUID}`)
+    .update({ participants: [...participants, userUID] });
+  dispatch({
+    type: types.JOIN_ROOM,
+    userUID: userUID
+  });
+  dispatch(loadChatRooms());
+};
+
 // Set active chat room
-export const setActiveChatRoom = room => dispatch => {
+export const setActiveChatRoom = (key, room) => dispatch => {
+  const messages = room['messages'] === undefined ? {} : room['messages'];
+  const activeRoom = {
+    uid: key,
+    messages: messages,
+    name: room['name'],
+    participants: room['participants']
+  };
   dispatch({
     type: types.SET_ACTIVE_ROOM,
-    payload: room
+    payload: activeRoom
   });
 };

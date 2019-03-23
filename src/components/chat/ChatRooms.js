@@ -9,7 +9,11 @@ import {
   loadChatRooms,
   setActiveChatRoom
 } from '../../actions/chatroomActions';
-import { loadMessages } from '../../actions/messageActions';
+import {
+  addNewMessage,
+  loadLastTenMessages,
+  clearUnread
+} from '../../actions/messageActions';
 
 class ChatRooms extends Component {
   constructor(props) {
@@ -32,7 +36,13 @@ class ChatRooms extends Component {
       isEmpty(this.props.chatroom.activeChatroom) &&
       !isEmpty(this.props.chatroom.rooms)
     ) {
-      this.setActiveRoom(Object.values(this.props.chatroom.rooms)[0]);
+      Object.keys(this.props.chatroom.rooms).map(key =>
+        this.props.loadLastTenMessages(key)
+      );
+      this.setActiveRoom(
+        Object.keys(this.props.chatroom.rooms)[0],
+        Object.values(this.props.chatroom.rooms)[0]
+      );
     }
   }
 
@@ -60,10 +70,9 @@ class ChatRooms extends Component {
     });
   }
 
-  setActiveRoom(room) {
-    this.props.setActiveChatRoom(room);
-    // this.props.loadMessages(room.uid);
-    console.log(Object.values(room));
+  setActiveRoom(key, room) {
+    this.props.setActiveChatRoom(key, room);
+    this.props.clearUnread(key);
   }
 
   render() {
@@ -110,32 +119,85 @@ class ChatRooms extends Component {
     }
 
     // List of rooms
-    let roomList;
+    let joinedRoomList;
+    let availableRoomList;
     if (chatroom.loading || isEmpty(chatroom.rooms)) {
-      roomList = <div />;
+      joinedRoomList = <div />;
+      availableRoomList = <div />;
     } else {
-      roomList = Object.keys(chatroom.rooms).map(key => (
-        <a
-          key={key}
-          href="#"
-          className={classnames(
-            'list-group-item list-group-item-action d-flex justify-content-between align-items-center',
-            {
-              'active text-white':
-                chatroom.rooms[key] === this.props.chatroom.activeChatroom
-            }
-          )}
-          onClick={() => this.setActiveRoom(chatroom.rooms[key])}
-        >
-          {chatroom.rooms[key].name}
-          <span className="badge badge-primary badge-pill">0</span>
-        </a>
-      ));
+      const count = key => {
+        if (
+          chatroom.activeChatroom.uid === key ||
+          isEmpty(this.props.messages[key])
+        ) {
+          return 0;
+        } else {
+          return this.props.messages[key].unread;
+        }
+      };
+      joinedRoomList = Object.keys(chatroom.rooms).map(key => {
+        if (
+          !isEmpty(chatroom.rooms[key].participants) &&
+          chatroom.rooms[key].participants.includes(this.props.user.uid)
+        ) {
+          return (
+            <a
+              key={key}
+              href="#"
+              className={classnames(
+                'list-group-item list-group-item-primary list-group-item-action d-flex justify-content-between align-items-center',
+                {
+                  'active text-white':
+                    key === this.props.chatroom.activeChatroom.uid
+                }
+              )}
+              onClick={() => this.setActiveRoom(key, chatroom.rooms[key])}
+            >
+              {chatroom.rooms[key].name}
+              <span className="badge badge-primary badge-pill">
+                {count(key)}
+              </span>
+            </a>
+          );
+        }
+      });
+      availableRoomList = Object.keys(chatroom.rooms).map(key => {
+        if (
+          isEmpty(chatroom.rooms[key].participants) ||
+          !chatroom.rooms[key].participants.includes(this.props.user.uid)
+        ) {
+          return (
+            <a
+              key={key}
+              href="#"
+              className={classnames(
+                'list-group-item list-group-item-action d-flex justify-content-between align-items-center',
+                {
+                  'active text-white':
+                    key === this.props.chatroom.activeChatroom.uid
+                }
+              )}
+              onClick={() => this.setActiveRoom(key, chatroom.rooms[key])}
+            >
+              {chatroom.rooms[key].name}
+              <span className="badge badge-primary badge-pill">
+                {count(key)}
+              </span>
+            </a>
+          );
+        }
+      });
     }
     return (
       <div>
         <div className="list-group mb-3" id="chat-room-list" role="tablist">
-          {roomList}
+          <hr />
+          <div className="text-center text-muted">--- JOINED ---</div>
+          <hr />
+          {joinedRoomList}
+          <hr />
+          <div className="text-center text-muted">--- AVAILABLE ---</div>
+          {availableRoomList}
         </div>
         {createRoomElement}
       </div>
@@ -147,17 +209,29 @@ ChatRooms.propTypes = {
   createChatRoom: PropTypes.func.isRequired,
   loadChatRooms: PropTypes.func.isRequired,
   setActiveChatRoom: PropTypes.func.isRequired,
-  loadMessages: PropTypes.func.isRequired,
+  addNewMessage: PropTypes.func.isRequired,
+  loadLastTenMessages: PropTypes.func.isRequired,
+  clearUnread: PropTypes.func.isRequired,
   chatroom: PropTypes.object.isRequired,
+  chatroom: PropTypes.object.isRequired,
+  messages: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired
 };
 
 const mapStateToProps = state => ({
   user: state.user,
-  chatroom: state.chatroom
+  chatroom: state.chatroom,
+  messages: state.message.messages
 });
 
 export default connect(
   mapStateToProps,
-  { createChatRoom, loadChatRooms, setActiveChatRoom, loadMessages }
+  {
+    createChatRoom,
+    loadChatRooms,
+    setActiveChatRoom,
+    addNewMessage,
+    loadLastTenMessages,
+    clearUnread
+  }
 )(ChatRooms);
