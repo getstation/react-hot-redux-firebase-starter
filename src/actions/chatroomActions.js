@@ -13,6 +13,7 @@ export const createChatRoom = (name, userId) => dispatch => {
 export const loadChatRooms = () => dispatch => {
   dispatch(loadingChatRooms());
   const ref = firebase.database().ref('/chatrooms');
+  /* eslint-disable no-console */
   ref
     .once('value')
     .then(rooms => {

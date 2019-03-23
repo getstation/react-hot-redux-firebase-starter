@@ -38,8 +38,10 @@ class Message extends Component {
 }
 
 Message.propTypes = {
+  message: PropTypes.object.isRequired,
   messages: PropTypes.object.isRequired,
   chatroom: PropTypes.object.isRequired,
+  chatroom_uid: PropTypes.string.isRequired,
   user: PropTypes.object.isRequired
 };
 

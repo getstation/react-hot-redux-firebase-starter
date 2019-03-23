@@ -30,6 +30,8 @@ export default function messageReducer(state = initialState, action) {
           }),
           loading: false
         });
+      } else {
+        return Object.assign({}, state, {});
       }
     case types.CLEAR_UNREAD:
       return Object.assign({}, state, {

@@ -60,6 +60,7 @@ export const loadingMessages = () => {
 // Delete ALL messages
 export const deleteAllMessages = () => dispatch => {
   const ref = firebase.database().ref('/messages');
+  /* eslint-disable no-console */
   ref
     .remove()
     .then(() => console.log('Messages deleted.'))

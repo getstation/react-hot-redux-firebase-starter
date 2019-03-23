@@ -32,7 +32,7 @@ class MessageList extends Component {
   }
 
   scrollToLatestMessage() {
-    this.messagesEnd.scrollIntoView({ behavior: 'smooth' });
+    this.refs['bottom'].scrollIntoView({ behavior: 'smooth' });
   }
 
   handleChange(event) {
@@ -144,11 +144,7 @@ class MessageList extends Component {
           <div className="card-body chat-list">
             <div>{messageList}</div>
             {/* Fake element used for scrolling */}
-            <div
-              ref={el => {
-                this.messagesEnd = el;
-              }}
-            />
+            <div ref="bottom" />
           </div>
           <div className="card-footer">{inputElement}</div>
         </div>
@@ -160,6 +156,7 @@ class MessageList extends Component {
 MessageList.propTypes = {
   createMessage: PropTypes.func.isRequired,
   clearUnread: PropTypes.func.isRequired,
+  message: PropTypes.object.isRequired,
   joinRoom: PropTypes.func.isRequired,
   chatroom: PropTypes.object.isRequired,
   user: PropTypes.object.isRequired
